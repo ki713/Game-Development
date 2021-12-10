@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Game development</title>
+        <style>
+            *{
+                margin: 0;
+                padding: 0;
+            }
+            .hide{display: none;}
+            .lines
+            {
+                width: 10px;
+                height: 100px;
+                background: white;
+                position: absolute;
+                margin-left: 195px;
+                /* total width of gameArea = 400px
+                width of lunes = 10px
+                to find center = (200/2 + 10/2); */
+            
+            }
+            .car,.enemy
+            {
+                width: 50px;
+                height: 70px;
+                background-color: blue;
+                
+                position: absolute;
+               bottom: 120px;
+               overflow: hidden;
+            }
+            .gameArea
+            {
+                width: 400px;
+                height: 100vh;
+                background: #2d3436;
+                margin: auto;
+                position: relative;
+                
+            }
+        </style>
+
+    </head>
+    <body>
+        <div class="carGame">
+            <div class="score"></div>
+            <div class="startScreen">
+                <p>Press Here to Start<br>
+                Arrow keys to move<br>
+            If you hit another car you will lose.
+        </p>
+            </div>
+        </div>
+        <div class="gameArea"></div>
+    </body>
+    <script>
+        //The dot notation is used to access the object properties in JavaScript
+        //JavaScript const variables must be assigned a value when they are declared
+        //document:If you want to access any element in an HTML page, you always start with accessing the document object.
+        const score = document.querySelector('.score');
+        const startScreen = document.querySelector('.startScreen');
+        const gameArea = document.querySelector('.gameArea');
+
+        //to get the output 
+        console.log(gameArea);
+
+        //to start the game
+
+        startScreen.addEventListener('click',start);
+
+        let player = { speed : 5 };
+
+        //document is a webpage of HTML
+        //addEventListener means it will invoke when we call keydown function
+        document.addEventListener('keydown',keyDown);
+        document.addEventListener('keyup',keyUp);
+
+        //to define all the keys
+        //let is used to create a object
+        let keys = {ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false}
+
+       //The preventDefault() method cancels the event if it is cancelable, meaning that the default action that belongs to the event will not occur. For example, this can be useful when: Clicking on a "Submit" button, prevent it from submitting a form;
+
+       //keyDown is used to press
+        function keyDown(e)
+        {
+            e.preventDefault();
+            //the key which is pressed it become true other become false
+            keys[e.key] = true;
+            
+            //console.log(e.key);
+            console.log(keys);
+        }
+
+        //key up is used to release
+        function keyUp(e)
+        {
+            e.preventDefault();
+            //it will make the key false when it is release
+            keys[e.key] = false;
+          
+
+            // console.log(e.key);
+            console.log(keys);
+        }
+
+        // function isCollide()
+        // {
+        //     aRect = a.getBoundingClientRect();
+        //     bRect = b.getBoundingClientRect();
+
+        //     return !(())
+
+        // }
+
+        //function to movelines in continous
+        function moveLines()
+        {
+            let lines = document.querySelectorAll('.lines');
+           /// lines.forEach(function(item))
+            //The forEach() method calls a function once for each element in an array, in order.
+             //forEach() is not executed for array elements without values.
+
+            lines.forEach(function(item)
+            {
+                //this if statment helps me to move the lines continously 
+                //as 685 is the length of the road 
+                if(item.y >= 715)
+                {
+                    //this help is to move from top to down
+                    item.y -= 765;
+                }
+
+            
+               
+           item.y += player.speed //to give  to the lines i.e. when we do animation then line will move  the  given speed
+           item.style.top = item.y + "px";//to give positionto the lines
+
+            })
+
+
+        }
+
+        //function to moveEnemy in continous
+        function moveEnemy()
+        {
+            let enemy = document.querySelectorAll('.enemy');
+           /// enemy.forEach(function(item))
+            //The forEach() method calls a function once for each element in an array, in order.
+             //forEach() is not executed for array elements without values.
+
+            enemy.forEach(function(item)
+            {
+                //this if statment helps me to move enemy continously 
+                //as 685 is the length of the road 
+                if(item.y >= 715)
+                {
+                    //this help is to move from top to down
+                    item.y = -300;
+                }
+
+            
+               
+           item.y += player.speed //to give  to the  enemy i.e. when we do animation then line will move  the  given speed
+           item.style.top = item.y + "px";//to give positionto the lines
+
+            })
+
+
+        }
+
+        function gamePlay()
+        {
+            console.log("Hey,I am clicked");
+            //we define this again as we want this to count in the loop
+            let car = document.querySelector('.car');
+            //gameArea is the black part i.e. road
+            //The getBoundingClientRect() method returns the size of an element and its position relative to the viewport.
+            //This method returns a DOMRect object with eight properties: left, top, right, bottom, x, y, width, height.
+            let road = gameArea.getBoundingClientRect();
+            console.log(road);
+
+
+
+            if(player.start)
+            {
+                moveLines();
+                moveEnemy();
+                //x = left,y= top
+                //to work with keys i.e. to to move the keys 
+                //the condition is given to go upward and we do 70 is the height of the car and + we use as want to give some distance when we are going to upward so that it will not touch any other car
+                if(keys.ArrowUp && player.y > (road.top + 70)) {player.y -= player.speed}//to move further
+
+                //road.top is the height of gameArea
+
+                if(keys.ArrowDown && player.y < (road.bottom - 70)) {player.y += player.speed}//to move backward
+                //we use player.x >0  as we do not want to move car outside the road so it will not go out from left side
+                if(keys.ArrowLeft  && player.x > 0) {player.x -= player.speed}//to move left
+                //we use < than as  (road.width - 50) as we dont want to move car outside the road  & 50 is car width 
+                // road.width - car .width  = gameArea.width
+                if(keys.ArrowRight && player.x < (road.width - 50)) {player.x += player.speed}//to move right
+
+                //to use css in javascript
+                //+ is use to concat
+                car.style.top = player.y + "px";
+                car.style.left = player.x + "px";
+
+                window.requestAnimationFrame(gamePlay);
+
+            }
+           
+        }
+        
+        //the game will start
+        function start()
+        {
+            gameArea.classList.remove('hide');
+            startScreen.classList.add('hide');
+            player.start = true;
+
+            //The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser calls a specified function to update an animation before the next repaint. The method takes a callback as an argument to be invoked before the repaint.
+            window.requestAnimationFrame(gamePlay);
+
+
+            //to create a roadLines
+            for(x=0;x<5;x++)
+            {
+                let roadLine = document.createElement('div');
+                roadLine.setAttribute('class','lines');
+                roadLine.y = (x*150);
+                roadLine.style.top = roadLine.y + "px";
+                gameArea.appendChild(roadLine);
+
+            }
+           
+
+        
+        //The setAttribute() method adds the specified attribute to an element, and gives it the specified value.
+        //The innerText property can be used to write the dynamic text on the html document. Here, text will not be interpreted as html text but a normal text.
+        //appendchild means add innertext in your car
+        let car = document.createElement('div');
+
+        car.setAttribute('class','car');
+        //car.innerText = "Hey I am ur car";
+        gameArea.appendChild(car);
+        
+
+        //to  declare a variable and create a object  and store the value of offset
+        //here variable is player
+        player.x = car.offsetLeft;
+        player.y = car.offsetTop;
+
+        //The offset() method set or returns the offset coordinates for the selected elements, relative to the document.
+        // console.log("Top position:" +car.offsetTop);
+        // console.log("Left positoon:"+ car.offsetLeft);
+         
+
+
+        //to get animated cars
+        for(x=0;x<3;x++)
+            {
+                let enemyCar = document.createElement('div');
+                enemyCar.setAttribute('class','enemy');
+                //to have top position
+                //enemyCar.y = (x*150);
+                //we have do this to get top position
+                //x will be taken from loop and we have mul with -1 as we want to go upwards and for going upward we should put  in -1
+                enemyCar.y = ((x+1)*350)* -1;
+                enemyCar.style.top = enemyCar.y + "px";
+                //to give background color
+                enemyCar.style.background = 'green';
+                //to have cars in different positions
+                //The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.
+                 //If the passed argument is an integer, the value will not be rounded.
+                 //Math.random() returns a random number between 0 (inclusive),  and 1 (exclusive):
+                enemyCar.style.left = Math.floor(Math.random() * 350) + "px";
+                
+                gameArea.appendChild(enemyCar);
+
+            }
+        }
+    </script>
+</html>
